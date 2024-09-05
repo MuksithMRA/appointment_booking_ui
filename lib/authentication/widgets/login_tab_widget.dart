@@ -3,7 +3,6 @@ import 'package:asiri/authentication/utils.dart';
 import 'package:asiri/core/utils/loading_overlay.dart';
 import 'package:asiri/core/utils/screen_size.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
