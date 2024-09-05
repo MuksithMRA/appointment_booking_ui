@@ -1,79 +1,18 @@
+import 'dart:convert';
 import 'dart:developer';
 
+import 'package:asiri/authentication/models/doctor_model.dart';
+import 'package:asiri/authentication/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../environment.dart';
-import '../models/doctor_model.dart';
 import '../models/slot_model.dart';
 import 'package:http/http.dart' as http;
 
 class DoctorProvider extends ChangeNotifier {
-  List<DoctorModel> doctors = [
-    DoctorModel(
-      id: 1,
-      avatar:
-          'https://t3.ftcdn.net/jpg/02/60/04/08/360_F_260040863_fYxB1SnrzgJ9AOkcT0hoe7IEFtsPiHAD.jpg',
-      doctorFirstName: 'Dr. John',
-      doctorLastName: 'Doe',
-      specialization: 'Cardiologist',
-      slots: [
-        SlotModel(
-          id: 1,
-          scheduleDateTime: DateTime.now(),
-          slotStatus: 'Available',
-          notes: 'No notes',
-        ),
-        SlotModel(
-          id: 2,
-          scheduleDateTime: DateTime.now().add(const Duration(minutes: 15)),
-          slotStatus: 'Available',
-          notes: 'No notes',
-        ),
-      ],
-    ),
-    DoctorModel(
-      id: 2,
-      avatar:
-          'https://t3.ftcdn.net/jpg/02/60/04/08/360_F_260040863_fYxB1SnrzgJ9AOkcT0hoe7IEFtsPiHAD.jpg',
-      doctorFirstName: 'Dr. Mike',
-      doctorLastName: 'Baker',
-      specialization: 'Cardiologist',
-      slots: [
-        SlotModel(
-          id: 1,
-          scheduleDateTime: DateTime.now(),
-          slotStatus: 'Available',
-          notes: 'No notes',
-        ),
-        SlotModel(
-          id: 2,
-          scheduleDateTime: DateTime.now().add(const Duration(minutes: 15)),
-          slotStatus: 'Available',
-          notes: 'No notes',
-        ),
-      ],
-    ),
-  ];
+  List<DoctorModel> doctors = [];
 
-  List<SlotModel> getSlotsbyDateTime(DateTime dateTime) {
-    List<SlotModel> slots = [];
-    for (var doctor in doctors) {
-      for (var slot in doctor.slots) {
-        if (slot.scheduleDateTime!.year == dateTime.year &&
-            slot.scheduleDateTime!.month == dateTime.month &&
-            slot.scheduleDateTime!.day == dateTime.day) {
-          slots.add(slot);
-        }
-      }
-    }
-    return slots.map((slot) {
-      return SlotModel(
-        id: slot.id,
-        slotFormattedTime: DateFormat('HH:mm').format(slot.scheduleDateTime!),
-      );
-    }).toList();
-  }
-
+  
   void updateSelectedDateTime(int doctorId, DateTime dateTime) {
     for (var doctor in doctors) {
       if (doctor.id == doctorId) {
@@ -83,9 +22,59 @@ class DoctorProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  getAll(){
-    http.get(Uri.parse(Environment.apiUrl)).then((response){
-      log(response.body);
-    });
+  Future<void> getAllDoctors() async {
+    try {
+      final response = await http.get(
+        Uri.parse('${Environment.apiUrl}/CareProvider/GetAll'),
+        headers: Utils.headers(),
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['statusCode'] == 200) {
+          doctors = [];
+          for (var element in data['data'] ?? []) {
+            DoctorModel doctor = DoctorModel.fromMap(element);
+            doctor.slots = await getSlotsByCareProviderId(doctor.id);
+            doctors.add(doctor);
+          }
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  Future<List<SlotModel>> getSlotsByCareProviderId(int careProviderId) async {
+    List<SlotModel> slots = [];
+    try {
+      final response = await http.get(
+        Uri.parse(
+            '${Environment.apiUrl}/ScheduleSlot/GetScheduleSlotsByCareProviderId/$careProviderId'),
+        headers: Utils.headers(),
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['statusCode'] == 200) {
+          for (var element in data['data'] ?? []) {
+            SlotModel slot = SlotModel.fromMap(element);
+            DateTime dateTime = DateTime(
+              slot.scheduleDateTime!.year,
+              slot.scheduleDateTime!.month,
+              slot.scheduleDateTime!.day,
+              int.parse(slot.slotFormattedTime.split(":")[0]),
+              int.parse(slot.slotFormattedTime.split(":")[1]),
+            );
+            slot.scheduleDateTime = dateTime;
+            slot.slotFormattedTime = DateFormat('HH:mm').format(dateTime);
+            slots.add(slot);
+          }
+          return slots;
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+    return slots;
   }
 }

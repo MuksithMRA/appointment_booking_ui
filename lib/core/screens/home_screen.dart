@@ -1,12 +1,11 @@
-import 'package:asiri/authentication/utils.dart';
-import 'package:asiri/core/models/specialization.dart';
-import 'package:asiri/core/providers/doctor_provider.dart';
-import 'package:asiri/core/providers/specialization_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../authentication/providers/authentication_provider.dart';
+import '../models/specialization.dart';
+import '../providers/doctor_provider.dart';
+import '../providers/specialization_provider.dart';
 import '../utils/screen_size.dart';
 import '../widgets/doctor_card_widget.dart';
 import '../widgets/top_navbar_widget.dart';
@@ -19,6 +18,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, (){
+        context.read<DoctorProvider>().getAllDoctors();
+    });
+  }
   @override
   Widget build(BuildContext context) {
     ScreenSize.init(context);

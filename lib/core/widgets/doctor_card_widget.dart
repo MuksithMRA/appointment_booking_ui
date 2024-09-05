@@ -1,7 +1,8 @@
+import 'package:asiri/authentication/models/doctor_model.dart';
+import 'package:asiri/core/models/slot_model.dart';
 import 'package:asiri/core/utils/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/doctor_model.dart';
 import '../providers/doctor_provider.dart';
 import '../utils/screen_size.dart';
 
@@ -15,6 +16,7 @@ class DoctorCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isFutureDay = !(doctor.isToday() || doctor.isTomorrow());
+
     return Container(
       width: ScreenSize.width * 0.25,
       height: ScreenSize.width * 0.2,
@@ -44,7 +46,7 @@ class DoctorCardWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "${doctor.doctorFirstName} ${doctor.doctorLastName}",
+                    "${doctor.firstName} ${doctor.lastName}",
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 16),
                   ),
@@ -170,24 +172,17 @@ class DoctorCardWidget extends StatelessWidget {
           const SizedBox(height: 10),
           const Divider(),
           const SizedBox(height: 10),
-          const Expanded(
+          Expanded(
             child: Wrap(
               spacing: 10,
               runSpacing: 10,
-              children: [
-                Chip(
-                  label: Text("14:00"),
-                ),
-                Chip(
-                  label: Text("14:15"),
-                ),
-                Chip(
-                  label: Text("14:30"),
-                ),
-                Chip(
-                  label: Text("15:00"),
-                ),
-              ],
+              children: doctor.getSlotsbyDateTime()
+                  .map(
+                    (e) =>  Chip(
+                      label: Text(e.slotFormattedTime),
+                    ),
+                  )
+                  .toList(),
             ),
           ),
         ],

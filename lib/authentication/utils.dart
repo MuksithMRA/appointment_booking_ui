@@ -1,11 +1,10 @@
-import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:toastification/toastification.dart';
 
 import '../dependencies/secure_storage_service.dart';
 
 class Utils {
- 
-
+  static Toastification toastification = Toastification();
   static Map<String, String> headers() {
     return {
       "Authorization": "Bearer ${SecureStorageService.read(key: "token")}",
@@ -14,41 +13,62 @@ class Utils {
   }
 
   static error(BuildContext context, String? message) {
-    Flushbar(
-      flushbarPosition: FlushbarPosition.TOP,
+    toastification.show(
+      backgroundColor: Colors.red,
+      context: context,
       icon: const Icon(
         Icons.error,
-        color: Colors.red,
+        color: Colors.white,
       ),
-      title: 'Error',
-      message: message,
-      duration: const Duration(seconds: 3),
-    ).show(context);
+      title: Text(
+        message!,
+        style: const TextStyle(color: Colors.white),
+      ),
+      showIcon: true,
+      progressBarTheme: const ProgressIndicatorThemeData(
+        color: Colors.white,
+      ),
+      autoCloseDuration: const Duration(seconds: 5),
+    );
   }
 
   static warning(BuildContext context, String? message) {
-    Flushbar(
-      flushbarPosition: FlushbarPosition.TOP,
+    toastification.show(
+      backgroundColor: Colors.orange,
+      context: context,
       icon: const Icon(
-        Icons.warning,
-        color: Colors.orange,
+        Icons.error,
+        color: Colors.white,
       ),
-      title: 'Warning',
-      message: message,
-      duration: const Duration(seconds: 3),
-    ).show(context);
+      title: Text(
+        message!,
+        style: const TextStyle(color: Colors.white),
+      ),
+      showIcon: true,
+      autoCloseDuration: const Duration(seconds: 5),
+      progressBarTheme: const ProgressIndicatorThemeData(
+        color: Colors.white,
+      ),
+    );
   }
 
   static success(BuildContext context, String? message) {
-    Flushbar(
-      flushbarPosition: FlushbarPosition.TOP,
+    toastification.show(
+      backgroundColor: Colors.green,
+      context: context,
       icon: const Icon(
-        Icons.check,
-        color: Colors.green,
+        Icons.check_circle_rounded,
+        color: Colors.white,
       ),
-      title: 'Success',
-      message: message,
-      duration: const Duration(seconds: 3),
-    ).show(context);
+      title: Text(
+        message!,
+        style: const TextStyle(color: Colors.white),
+      ),
+      showIcon: true,
+      autoCloseDuration: const Duration(seconds: 5),
+      progressBarTheme: const ProgressIndicatorThemeData(
+        color: Colors.white,
+      ),
+    );
   }
 }

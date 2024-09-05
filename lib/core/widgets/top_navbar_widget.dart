@@ -6,7 +6,8 @@ import 'package:provider/provider.dart';
 import '../utils/screen_size.dart';
 
 class TopNavBarWidget extends StatelessWidget {
-  const TopNavBarWidget({super.key});
+  final Function()? onLogout;
+  const TopNavBarWidget({super.key,  this.onLogout});
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +49,7 @@ class TopNavBarWidget extends StatelessWidget {
                       PopupMenuItem(
                         onTap: () {
                           context.read<AuthenticationProvider>().logout();
+                          onLogout?.call();
                         },
                         child: const SizedBox(
                           width: 100,
