@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../environment.dart';
 import '../models/doctor_model.dart';
 import '../models/slot_model.dart';
+import 'package:http/http.dart' as http;
 
 class DoctorProvider extends ChangeNotifier {
   List<DoctorModel> doctors = [
@@ -68,5 +72,20 @@ class DoctorProvider extends ChangeNotifier {
         slotFormattedTime: DateFormat('HH:mm').format(slot.scheduleDateTime!),
       );
     }).toList();
+  }
+
+  void updateSelectedDateTime(int doctorId, DateTime dateTime) {
+    for (var doctor in doctors) {
+      if (doctor.id == doctorId) {
+        doctor.selectedDateTime = dateTime;
+      }
+    }
+    notifyListeners();
+  }
+
+  getAll(){
+    http.get(Uri.parse(Environment.apiUrl)).then((response){
+      log(response.body);
+    });
   }
 }

@@ -9,38 +9,51 @@ class AuthenticationScreen extends StatefulWidget {
   State<AuthenticationScreen> createState() => _AuthenticationScreenState();
 }
 
-class _AuthenticationScreenState extends State<AuthenticationScreen> {
+class _AuthenticationScreenState extends State<AuthenticationScreen>
+    with SingleTickerProviderStateMixin {
+  TabController? _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          toolbarHeight: 100,
-          centerTitle: true,
-          title: Image.asset(
-            "assets/asiri.png",
-            height: 60,
-          ),
-          bottom: const TabBar(
-          labelStyle:  TextStyle(fontSize: 16),
-            tabs: [
-              Tab(
-                text: "Login",
-              ),
-              Tab(
-                text: "Register",
-              ),
-            ],
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        toolbarHeight: 100,
+        centerTitle: true,
+        title: Image.asset(
+          "assets/asiri.png",
+          height: 60,
         ),
-        body: const TabBarView(
-          children: [
-            LoginTabWidget(),
-            RegisterTabWidget(),
+        bottom: TabBar(
+          controller: _tabController,
+          labelStyle: const TextStyle(fontSize: 16),
+          tabs: const [
+            Tab(
+              text: "Login",
+            ),
+            Tab(
+              text: "Register",
+            ),
           ],
         ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          const LoginTabWidget(),
+          RegisterTabWidget(
+            onRegister: (patient) {
+              _tabController?.animateTo(0);
+            },
+          ),
+        ],
       ),
     );
   }

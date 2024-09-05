@@ -1,6 +1,7 @@
+import 'package:asiri/authentication/providers/authentication_provider.dart';
 import 'package:asiri/authentication/screens/authentication_screen.dart';
-import 'package:asiri/authentication/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../utils/screen_size.dart';
 
@@ -19,13 +20,47 @@ class TopNavBarWidget extends StatelessWidget {
             "assets/asiri.png",
             height: 70,
           ),
-          if (ScreenSize.type != ScreenSizeType.mobile)
+          if (ScreenSize.type != ScreenSizeType.mobile &&
+              context.watch<AuthenticationProvider>().isLoggedIn != null)
             InkWell(
               onTap: () {
-                if (Utils.isLoggedIn()) {
+                if (context.read<AuthenticationProvider>().isLoggedIn!) {
+                  showMenu(
+                    context: context,
+                    position: RelativeRect.fromLTRB(ScreenSize.width, 70, 0, 0),
+                    items: [
+                      PopupMenuItem(
+                        onTap: () {},
+                        child: const SizedBox(
+                          width: 100,
+                          height: 30,
+                          child: Text("My Bookings"),
+                        ),
+                      ),
+                      PopupMenuItem(
+                        onTap: () {},
+                        child: const SizedBox(
+                          width: 100,
+                          height: 30,
+                          child: Text("My Profile"),
+                        ),
+                      ),
+                      PopupMenuItem(
+                        onTap: () {
+                          context.read<AuthenticationProvider>().logout();
+                        },
+                        child: const SizedBox(
+                          width: 100,
+                          height: 30,
+                          child: Text("Logout"),
+                        ),
+                      ),
+                    ],
+                  );
+                  // context.read<AuthenticationProvider>().logout();
                 } else {
                   showDialog(
-                    barrierDismissible: false,
+                      barrierDismissible: false,
                       context: context,
                       builder: (context) => Dialog(
                             child: ClipRRect(
@@ -40,19 +75,29 @@ class TopNavBarWidget extends StatelessWidget {
               child: Container(
                 height: 70,
                 padding: const EdgeInsets.only(right: 10),
-                child: Utils.isLoggedIn()
-                    ? const Row(
+                child: context.watch<AuthenticationProvider>().isLoggedIn!
+                    ? Row(
                         children: [
-                          CircleAvatar(),
-                          SizedBox(width: 5),
-                          Text("Abdul Muksith"),
+                          CircleAvatar(
+                            backgroundImage: context
+                                    .read<AuthenticationProvider>()
+                                    .avatar
+                                    .isNotEmpty
+                                ? NetworkImage(context
+                                    .read<AuthenticationProvider>()
+                                    .avatar)
+                                : null,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(context.read<AuthenticationProvider>().fullName),
                         ],
                       )
                     : const Row(
                         children: [
-                          Icon(Icons.login , size: 20),
+                          Icon(Icons.login, size: 20),
                           SizedBox(width: 10),
-                          Text("Login /  Register" , style: TextStyle(fontSize: 16)),
+                          Text("Login /  Register",
+                              style: TextStyle(fontSize: 16)),
                         ],
                       ),
               ),
