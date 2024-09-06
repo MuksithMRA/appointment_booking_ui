@@ -1,5 +1,4 @@
 import 'package:asiri/authentication/models/doctor_model.dart';
-import 'package:asiri/core/models/slot_model.dart';
 import 'package:asiri/core/utils/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

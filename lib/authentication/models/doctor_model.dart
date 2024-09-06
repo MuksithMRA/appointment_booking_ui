@@ -1,9 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-
-import 'package:asiri/authentication/models/user_model.dart';
-import 'package:asiri/core/models/slot_model.dart';
-import 'package:intl/intl.dart';
+import '../../core/models/slot_model.dart';
+import 'user_model.dart';
 
 class DoctorModel {
   int id;
