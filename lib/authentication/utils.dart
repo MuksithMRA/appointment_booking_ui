@@ -5,10 +5,11 @@ import '../dependencies/secure_storage_service.dart';
 
 class Utils {
   static Toastification toastification = Toastification();
-  static Map<String, String> headers() {
+  static Future<Map<String, String>> headers()async {
     return {
-      "Authorization": "Bearer ${SecureStorageService.read(key: "token")}",
+      "Authorization": "Bearer ${await SecureStorageService.read(key: "token")}",
       "Content-Type": "application/json",
+      "Accept": "*/*"
     };
   }
 

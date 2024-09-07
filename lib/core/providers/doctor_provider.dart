@@ -12,7 +12,6 @@ import 'package:http/http.dart' as http;
 class DoctorProvider extends ChangeNotifier {
   List<DoctorModel> doctors = [];
 
-  
   void updateSelectedDateTime(int doctorId, DateTime dateTime) {
     for (var doctor in doctors) {
       if (doctor.id == doctorId) {
@@ -26,7 +25,7 @@ class DoctorProvider extends ChangeNotifier {
     try {
       final response = await http.get(
         Uri.parse('${Environment.apiUrl}/CareProvider/GetAll'),
-        headers: Utils.headers(),
+        headers: await Utils.headers(),
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -45,13 +44,17 @@ class DoctorProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<SlotModel>> getSlotsByCareProviderId(int careProviderId) async {
+  Future<List<SlotModel>> getSlotsByCareProviderId(int? careProviderId) async {
     List<SlotModel> slots = [];
+    String apiUrl =
+        "ScheduleSlot/GetScheduleSlotsByCareProviderId/$careProviderId";
+    if (careProviderId == null) {
+      apiUrl = "ScheduleSlot/GetByCareProviderIdForDoctor";
+    }
     try {
       final response = await http.get(
-        Uri.parse(
-            '${Environment.apiUrl}/ScheduleSlot/GetScheduleSlotsByCareProviderId/$careProviderId'),
-        headers: Utils.headers(),
+        Uri.parse('${Environment.apiUrl}/$apiUrl'),
+        headers: await Utils.headers(),
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

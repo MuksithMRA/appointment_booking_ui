@@ -1,14 +1,18 @@
 import 'package:asiri/core/models/slot_model.dart';
 import 'package:flutter/material.dart';
-
-import '../models/appointment_model.dart';
 import '../utils/formatter.dart';
 import '../utils/screen_size.dart';
-import 'doctor_appintments_widget.dart';
 
-class ScheduleWorkBench extends StatelessWidget {
-  const ScheduleWorkBench({super.key});
+class ScheduleWorkBench extends StatefulWidget {
+  final List<SlotModel> slots;
+  final Function()? onRefresh;
+  const ScheduleWorkBench({super.key, required this.slots, this.onRefresh});
 
+  @override
+  State<ScheduleWorkBench> createState() => _ScheduleWorkBenchState();
+}
+
+class _ScheduleWorkBenchState extends State<ScheduleWorkBench> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -41,20 +45,7 @@ class ScheduleWorkBench extends StatelessWidget {
               DataColumn(label: Text('Status')),
               DataColumn(label: Text('Action')),
             ],
-            source: ScheduleDataSource(
-              data: [
-                SlotModel(
-                  id: 1,
-                  scheduleDateTime: DateTime.now(),
-                  slotStatus: 'Available',
-                ),
-                SlotModel(
-                  id: 2,
-                  scheduleDateTime: DateTime.now().add(const Duration(minutes: 15)),
-                  slotStatus: 'Unavailable',
-                ),
-              ],
-            ),
+            source: ScheduleDataSource(data: widget.slots),
           ),
         ),
       ],

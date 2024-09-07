@@ -1,10 +1,10 @@
-import 'package:asiri/authentication/providers/authentication_provider.dart';
-import 'package:asiri/core/models/appointment_model.dart';
-import 'package:asiri/core/utils/formatter.dart';
+import 'package:asiri/core/models/slot_model.dart';
+import 'package:asiri/core/utils/loading_overlay.dart';
 import 'package:asiri/core/widgets/doctor_appintments_widget.dart';
 import 'package:asiri/core/widgets/top_navbar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../providers/doctor_provider.dart';
 import '../utils/screen_size.dart';
 import '../widgets/doctor_schedule_workbench.dart';
 
@@ -17,6 +17,13 @@ class DoctorHomeScreen extends StatefulWidget {
 
 class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
   int index = 0;
+  List<SlotModel> slots = [];
+
+  Future<void> getAllSlots() async {
+    slots = await context.read<DoctorProvider>().getSlotsByCareProviderId(null);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     ScreenSize.init(context);
@@ -66,9 +73,13 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                       ),
                       ListTile(
                         contentPadding: const EdgeInsets.all(10),
-                        onTap: () {
-                          setState(() {
-                            index = 1;
+                        onTap: () async {
+                          await LoadingOverlay.of(context)
+                              .during(getAllSlots())
+                              .then((value) {
+                            setState(() {
+                              index = 1;
+                            });
                           });
                         },
                         title: const Text(
@@ -91,9 +102,11 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                   margin: const EdgeInsets.all(50),
                   child: IndexedStack(
                     index: index,
-                    children: const [
-                      DoctorAppointmentsWidget(),
-                      ScheduleWorkBench()
+                    children: [
+                      const DoctorAppointmentsWidget(),
+                      ScheduleWorkBench(
+                        slots: slots,
+                      )
                     ],
                   ),
                 )
@@ -105,5 +118,3 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
     );
   }
 }
-
-

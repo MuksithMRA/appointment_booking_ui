@@ -19,7 +19,7 @@ class AuthenticationProvider extends ChangeNotifier {
     try {
       final http.Response response = await http.post(
         Uri.parse("${Environment.apiUrl}/Authentication/RegisterPatient"),
-        headers: Utils.headers(),
+        headers: await Utils.headers(),
         body: model.toJson(),
       );
 
@@ -42,7 +42,7 @@ class AuthenticationProvider extends ChangeNotifier {
     try {
       final http.Response response = await http.post(
         Uri.parse("${Environment.apiUrl}/Authentication/RegisterCareProvider"),
-        headers: Utils.headers(),
+        headers: await Utils.headers(),
         body: model.toJson(),
       );
 
@@ -65,7 +65,7 @@ class AuthenticationProvider extends ChangeNotifier {
     try {
       final http.Response response = await http.post(
         Uri.parse("${Environment.apiUrl}/Authentication/PatientLogin"),
-        headers: Utils.headers(),
+        headers: await Utils.headers(),
         body: jsonEncode({"email": email, "password": password}),
       );
 
@@ -98,7 +98,7 @@ class AuthenticationProvider extends ChangeNotifier {
     try {
       final http.Response response = await http.post(
         Uri.parse("${Environment.apiUrl}/Authentication/CareProviderLogin"),
-        headers: Utils.headers(),
+        headers: await Utils.headers(),
         body: jsonEncode({"email": email, "password": password}),
       );
 
