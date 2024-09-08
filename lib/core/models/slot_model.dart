@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
 import 'dart:convert';
-
 import '../../authentication/models/doctor_model.dart';
 
 class SlotModel {
@@ -22,11 +21,12 @@ class SlotModel {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'id': id,
-      'doctor': doctor?.toMap(),
-      'scheduleDateTime': scheduleDateTime?.millisecondsSinceEpoch,
-      'slotFormattedTime': slotFormattedTime,
-      'slotStatus': slotStatus,
+      'date': scheduleDateTime?.toIso8601String(),
+      'start_time': {
+        'hours': scheduleDateTime!.hour,
+        'minutes': scheduleDateTime!.minute,
+      },
+      'status': slotStatus,
       'notes': notes,
     };
   }

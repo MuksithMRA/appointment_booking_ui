@@ -106,6 +106,9 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                       const DoctorAppointmentsWidget(),
                       ScheduleWorkBench(
                         slots: slots,
+                        onRefresh: () async {
+                          await getAllSlots();
+                        },
                       )
                     ],
                   ),

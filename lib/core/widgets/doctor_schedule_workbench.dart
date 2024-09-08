@@ -1,5 +1,7 @@
 import 'package:asiri/core/models/slot_model.dart';
+import 'package:asiri/core/providers/slot_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../utils/formatter.dart';
 import '../utils/screen_size.dart';
 
@@ -13,6 +15,21 @@ class ScheduleWorkBench extends StatefulWidget {
 }
 
 class _ScheduleWorkBenchState extends State<ScheduleWorkBench> {
+  TextEditingController dateController = TextEditingController();
+  TextEditingController timeController = TextEditingController();
+
+  DateTime? selectedDate;
+  TimeOfDay? selectedTime;
+
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    dateController.dispose();
+    timeController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -31,6 +48,143 @@ class _ScheduleWorkBenchState extends State<ScheduleWorkBench> {
           style: TextStyle(
             fontSize: 14,
           ),
+        ),
+        const SizedBox(height: 20),
+        Wrap(
+          children: [
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text(
+                      "Add Schedule",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    content: Form(
+                      key: formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please  select a date';
+                              }
+                              return null;
+                            },
+                            controller: dateController,
+                            readOnly: true,
+                            onTap: () async {
+                              DateTime? dateTime = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime.now()
+                                    .add(const Duration(days: 30)),
+                              );
+                              if (dateTime != null) {
+                                dateController.text =
+                                    Formatter.formatDateTime(dateTime);
+                                selectedDate = dateTime;
+                                setState(() {});
+                              }
+                            },
+                            decoration: const InputDecoration(
+                              hintText: "Select slot date",
+                              prefixIcon: Icon(Icons.calendar_today),
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          TextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select a time';
+                              }
+                              return null;
+                            },
+                            controller: timeController,
+                            readOnly: true,
+                            onTap: () async {
+                              TimeOfDay? time = await showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay.now(),
+                              );
+                              if (time != null) {
+                                timeController.text = time.format(context);
+                                selectedTime = time;
+                                setState(() {});
+                              }
+                            },
+                            decoration: const InputDecoration(
+                              hintText: "Select slot time",
+                              prefixIcon: Icon(Icons.calendar_today),
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("Cancel"),
+                              ),
+                              ElevatedButton(
+                                style: TextButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                ),
+                                onPressed: () async{
+                                  if (formKey.currentState!.validate()) {
+                                    await context.read<SlotProvider>().addSlot(
+                                          SlotModel(
+                                            scheduleDateTime: DateTime(
+                                              selectedDate!.year,
+                                              selectedDate!.month,
+                                              selectedDate!.day,
+                                              selectedTime!.hour,
+                                              selectedTime!.minute,
+                                            ),
+                                            slotStatus: 'Available',
+                                          ),
+                                        );
+                                    widget.onRefresh?.call();
+                                    Navigator.pop(context);
+                                  }
+                                },
+                                child: const Text("Add"),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.add),
+              label: const Text("Add Schedule"),
+            ),
+          ],
         ),
         const SizedBox(height: 20),
         SizedBox(

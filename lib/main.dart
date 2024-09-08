@@ -1,3 +1,4 @@
+import 'package:asiri/core/providers/slot_provider.dart';
 import 'package:asiri/core/screens/doctor_home_screen.dart';
 import 'package:asiri/core/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,8 @@ Future<void> main() async {
     ChangeNotifierProvider(create: (context) => DoctorProvider()),
     ChangeNotifierProvider(create: (context) => AuthenticationProvider()),
     ChangeNotifierProvider(create: (context) => CommonProvider()),
+    ChangeNotifierProvider(create: (context) => SlotProvider()),
+
   ], child: const MyApp()));
 }
 
