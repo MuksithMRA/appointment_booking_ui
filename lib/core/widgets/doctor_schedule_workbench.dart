@@ -121,6 +121,7 @@ class _ScheduleWorkBenchState extends State<ScheduleWorkBench> {
                                 initialTime: TimeOfDay.now(),
                               );
                               if (time != null) {
+                                // ignore: use_build_context_synchronously
                                 timeController.text = time.format(context);
                                 selectedTime = time;
                                 setState(() {});
@@ -168,6 +169,7 @@ class _ScheduleWorkBenchState extends State<ScheduleWorkBench> {
                                           ),
                                         );
                                     widget.onRefresh?.call();
+                                    // ignore: use_build_context_synchronously
                                     Navigator.pop(context);
                                   }
                                 },
