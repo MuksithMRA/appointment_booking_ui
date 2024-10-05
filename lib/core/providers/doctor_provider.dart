@@ -22,6 +22,7 @@ class DoctorProvider extends ChangeNotifier {
   }
 
   Future<void> getAllDoctors() async {
+    doctors = [];
     try {
       final response = await http.get(
         Uri.parse('${Environment.apiUrl}/CareProvider/GetAll'),
@@ -30,10 +31,12 @@ class DoctorProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['statusCode'] == 200) {
-          doctors = [];
           for (var element in data['data'] ?? []) {
             DoctorModel doctor = DoctorModel.fromMap(element);
             doctor.slots = await getSlotsByCareProviderId(doctor.id);
+            if (doctors.any((element) => element.id == doctor.id)) {
+              continue;
+            }
             doctors.add(doctor);
           }
           notifyListeners();
