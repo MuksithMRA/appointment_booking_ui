@@ -1,3 +1,4 @@
+import 'package:asiri/authentication/utils.dart';
 import 'package:asiri/core/models/slot_model.dart';
 import 'package:asiri/core/providers/slot_provider.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,15 @@ class _ScheduleWorkBenchState extends State<ScheduleWorkBench> {
   TimeOfDay? selectedTime;
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    selectedDate = widget.slots.isNotEmpty
+        ? widget.slots.last.scheduleDateTime
+        : DateTime.now();
+    selectedTime = TimeOfDay.fromDateTime(selectedDate!);
+  }
 
   @override
   void dispose() {
@@ -59,6 +69,17 @@ class _ScheduleWorkBenchState extends State<ScheduleWorkBench> {
                 ),
               ),
               onPressed: () {
+                if (selectedDate != null && selectedTime != null) {
+                  DateTime newTime = DateTime(
+                    selectedDate!.year,
+                    selectedDate!.month,
+                    selectedDate!.day,
+                    selectedTime!.hour,
+                    selectedTime!.minute + 15,
+                  );
+                  selectedTime = TimeOfDay.fromDateTime(newTime);
+                  timeController.text = selectedTime?.format(context) ?? "";
+                }
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
@@ -121,6 +142,12 @@ class _ScheduleWorkBenchState extends State<ScheduleWorkBench> {
                                 initialTime: TimeOfDay.now(),
                               );
                               if (time != null) {
+                                DateTime now = DateTime.now();
+                                if (time.hour < now.hour &&
+                                    time.minute < now.minute) {
+                                  Utils.success(
+                                      context, "Invalid time selected");
+                                }
                                 // ignore: use_build_context_synchronously
                                 timeController.text = time.format(context);
                                 selectedTime = time;
@@ -154,7 +181,7 @@ class _ScheduleWorkBenchState extends State<ScheduleWorkBench> {
                                     borderRadius: BorderRadius.circular(5),
                                   ),
                                 ),
-                                onPressed: () async{
+                                onPressed: () async {
                                   if (formKey.currentState!.validate()) {
                                     await context.read<SlotProvider>().addSlot(
                                           SlotModel(
@@ -192,9 +219,10 @@ class _ScheduleWorkBenchState extends State<ScheduleWorkBench> {
         SizedBox(
           width: ScreenSize.width * 0.7,
           child: PaginatedDataTable(
+            showFirstLastButtons:  true,
             showEmptyRows: false,
-            availableRowsPerPage: const [5, 10, 20],
-            rowsPerPage: 5,
+            availableRowsPerPage: const [8, 16, 24, 32],
+            rowsPerPage: 8,
             columns: const [
               DataColumn(label: Text('Schedule No')),
               DataColumn(label: Text('Scheduled On')),
@@ -247,6 +275,15 @@ class ScheduleDataSource extends DataTableSource {
             icon: const Icon(
               Icons.check_circle_rounded,
               color: Colors.grey,
+            ),
+            onPressed: () {},
+          ),
+          const SizedBox(width: 10),
+          IconButton(
+            tooltip: "Delete slot",
+            icon: const Icon(
+              Icons.delete_rounded,
+              color: Colors.redAccent,
             ),
             onPressed: () {},
           ),

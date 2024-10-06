@@ -7,7 +7,7 @@ import '../utils/screen_size.dart';
 
 class TopNavBarWidget extends StatelessWidget {
   final Function()? onLogout;
-  const TopNavBarWidget({super.key,  this.onLogout});
+  const TopNavBarWidget({super.key, this.onLogout});
 
   @override
   Widget build(BuildContext context) {
@@ -41,22 +41,26 @@ class TopNavBarWidget extends StatelessWidget {
                     context: context,
                     position: RelativeRect.fromLTRB(ScreenSize.width, 70, 0, 0),
                     items: [
-                      PopupMenuItem(
-                        onTap: () {},
-                        child: const SizedBox(
-                          width: 100,
-                          height: 30,
-                          child: Text("My Bookings"),
+                      if (context.read<AuthenticationProvider>().role ==
+                          "PATIENT")
+                        PopupMenuItem(
+                          onTap: () {},
+                          child: const SizedBox(
+                            width: 100,
+                            height: 30,
+                            child: Text("My Bookings"),
+                          ),
                         ),
-                      ),
-                      PopupMenuItem(
-                        onTap: () {},
-                        child: const SizedBox(
-                          width: 100,
-                          height: 30,
-                          child: Text("My Profile"),
+                      if (context.read<AuthenticationProvider>().role ==
+                          "PATIENT")
+                        PopupMenuItem(
+                          onTap: () {},
+                          child: const SizedBox(
+                            width: 100,
+                            height: 30,
+                            child: Text("My Profile"),
+                          ),
                         ),
-                      ),
                       PopupMenuItem(
                         onTap: () {
                           context.read<AuthenticationProvider>().logout();
