@@ -175,13 +175,20 @@ class DoctorCardWidget extends StatelessWidget {
             child: Wrap(
               spacing: 10,
               runSpacing: 10,
-              children: doctor.getSlotsbyDateTime()
-                  .map(
-                    (e) =>  Chip(
-                      label: Text(e.slotFormattedTime),
-                    ),
-                  )
-                  .toList(),
+              children: doctor.getSlotsbyDateTime().map((e) {
+                return ActionChip.elevated(
+                  onPressed: e.scheduleDateTime!.isBefore(DateTime.now())
+                      ? null
+                      : () {
+                          Navigator.pushNamed(context, '/booking-details',
+                              arguments: {
+                                'doctor': doctor,
+                                'slot': e,
+                              });
+                        },
+                  label: Text(e.slotFormattedTime),
+                );
+              }).toList(),
             ),
           ),
         ],

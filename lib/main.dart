@@ -1,6 +1,9 @@
+import 'package:asiri/core/providers/appointment_provider.dart';
 import 'package:asiri/core/providers/slot_provider.dart';
+import 'package:asiri/core/providers/user_provider.dart';
 import 'package:asiri/core/screens/doctor_home_screen.dart';
 import 'package:asiri/core/screens/splash_screen.dart';
+import 'package:asiri/core/widgets/patient_booking_details_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,7 +27,8 @@ Future<void> main() async {
     ChangeNotifierProvider(create: (context) => AuthenticationProvider()),
     ChangeNotifierProvider(create: (context) => CommonProvider()),
     ChangeNotifierProvider(create: (context) => SlotProvider()),
-
+    ChangeNotifierProvider(create: (context) => AppointmentProvider()),
+    ChangeNotifierProvider(create: (context) => UserProvider()),
   ], child: const MyApp()));
 }
 
@@ -55,6 +59,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/': (context) => const SplashScreen(),
         '/home': (context) => const HomeScreen(),
+        '/booking-details': (context) => const PatientBookingDetailsWidget(),
         '/doctor/login': (context) => const DoctorLoginScreen(),
         '/doctor/home': (context) => const DoctorHomeScreen(),
       },
