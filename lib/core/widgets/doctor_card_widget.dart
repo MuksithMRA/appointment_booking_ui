@@ -1,7 +1,9 @@
 import 'package:asiri/authentication/models/doctor_model.dart';
+import 'package:asiri/authentication/utils.dart';
 import 'package:asiri/core/utils/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../dependencies/secure_storage_service.dart';
 import '../providers/doctor_provider.dart';
 import '../utils/screen_size.dart';
 
@@ -177,9 +179,16 @@ class DoctorCardWidget extends StatelessWidget {
               runSpacing: 10,
               children: doctor.getSlotsbyDateTime().map((e) {
                 return ActionChip.elevated(
-                  onPressed: e.scheduleDateTime!.isBefore(DateTime.now())
+                  onPressed: e.scheduleDateTime!.isBefore(DateTime.now()) ||
+                          e.slotStatus == "Unavailable"
                       ? null
-                      : () {
+                      : () async {
+                          if (!await SecureStorageService.exists(
+                              key: "token")) {
+                            Utils.warning(
+                                context, "Please login to book an appointment");
+                            return;
+                          }
                           Navigator.pushNamed(context, '/booking-details',
                               arguments: {
                                 'doctor': doctor,

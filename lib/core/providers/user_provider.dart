@@ -20,6 +20,8 @@ class UserProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['statusCode'] == 200) {
+          patient = PatientModel.fromMap(data['data']);
+          notifyListeners();
           return "";
         }
       }

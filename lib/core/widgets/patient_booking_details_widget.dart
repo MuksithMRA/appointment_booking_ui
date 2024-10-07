@@ -1,4 +1,5 @@
 import 'package:asiri/authentication/models/patient_model.dart';
+import 'package:asiri/authentication/utils.dart';
 import 'package:asiri/core/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -28,15 +29,24 @@ class _PatientBookingDetailsWidgetState
 
   late LoadingOverlay overlay;
 
+  TextEditingController noteController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
+    overlay = LoadingOverlay.of(context);
     Future.delayed(Duration.zero, () async {
       UserProvider userProvider = context.read<UserProvider>();
       await overlay.during(userProvider.loadMyPatientProfile());
       patient = userProvider.patient;
       setState(() {});
     });
+  }
+
+  @override
+  void dispose() {
+    noteController.dispose();
+    super.dispose();
   }
 
   @override
@@ -55,7 +65,7 @@ class _PatientBookingDetailsWidgetState
         padding: const EdgeInsets.all(30),
         child: Column(
           children: [
-            bookingDetailsWidget(),
+            if (doctor != null) bookingDetailsWidget(),
             Divider(
               color: Colors.blueGrey[300]!,
               thickness: 0.3,
@@ -63,7 +73,7 @@ class _PatientBookingDetailsWidgetState
               endIndent: 50,
               indent: 50,
             ),
-            patientDetailsWidget(),
+            if (patient != null) patientDetailsWidget(),
             const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -80,15 +90,20 @@ class _PatientBookingDetailsWidgetState
                     ),
                   ),
                   onPressed: () async {
-                    await LoadingOverlay.of(context).during(
-                      context.read<AppointmentProvider>().bookAppointment(
-                            CreateAppointmentModel(
-                              scheduleSlotId: slot!.id,
-                              patientId: 1,
-                              note: "Note",
-                            ),
-                          ),
-                    );
+                    String message = await overlay.during(
+                        context.read<AppointmentProvider>().bookAppointment(
+                              CreateAppointmentModel(
+                                scheduleSlotId: slot!.id,
+                                patientId: patient!.id,
+                                note: noteController.text.trim(),
+                              ),
+                            ));
+                    if (message.isNotEmpty) {
+                      Utils.error(context, message);
+                    } else {
+                      Utils.success(context, "Appointment booked successfully");
+                      Navigator.popAndPushNamed(context, "/");
+                    }
                   },
                   child: const Text(
                     "Book Appointment",
@@ -216,24 +231,24 @@ class _PatientBookingDetailsWidgetState
             spacing: ScreenSize.width * 0.1,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              const Row(
+              Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundImage: NetworkImage(
+                    backgroundImage: NetworkImage(patient?.avatar ??
                         "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"),
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         "Patient name",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15),
                       ),
-                      Text("John Doe"),
+                      Text("${patient?.firstName} ${patient?.lastName}"),
                     ],
                   ),
                 ],
@@ -248,24 +263,24 @@ class _PatientBookingDetailsWidgetState
                   Text("1990-01-01"),
                 ],
               ),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     "Gender",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
-                  Text("Male"),
+                  Text(patient?.gender ?? ""),
                 ],
               ),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     "Phone",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
-                  Text("0712345678"),
+                  Text(patient?.phoneNumber ?? ""),
                 ],
               ),
               SizedBox(
@@ -304,6 +319,7 @@ class _PatientBookingDetailsWidgetState
                     ),
                     const SizedBox(height: 10),
                     TextField(
+                      controller: noteController,
                       maxLines: 5,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(

@@ -22,7 +22,9 @@ class AppointmentProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['statusCode'] == 200) {
-          for (var element in data['data'] ?? []) {}
+          for (var element in data['data'] ?? []) {
+            appointments.add(AppointmentModel.fromMap(element));
+          }
           notifyListeners();
         }
       }
@@ -36,6 +38,7 @@ class AppointmentProvider extends ChangeNotifier {
       final response = await http.post(
         Uri.parse('${Environment.apiUrl}/Appointement/CreateOrUpdate'),
         headers: await Utils.headers(),
+        body: model.toJson(),
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

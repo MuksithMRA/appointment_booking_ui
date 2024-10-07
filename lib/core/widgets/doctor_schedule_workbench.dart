@@ -2,6 +2,7 @@ import 'package:asiri/authentication/utils.dart';
 import 'package:asiri/core/models/slot_model.dart';
 import 'package:asiri/core/providers/slot_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../utils/formatter.dart';
 import '../utils/screen_size.dart';
@@ -77,6 +78,8 @@ class _ScheduleWorkBenchState extends State<ScheduleWorkBench> {
                     selectedTime!.hour,
                     selectedTime!.minute + 15,
                   );
+                  selectedDate = newTime;
+                  dateController.text = DateFormat("yyyy-MM-dd").format(newTime);
                   selectedTime = TimeOfDay.fromDateTime(newTime);
                   timeController.text = selectedTime?.format(context) ?? "";
                 }
