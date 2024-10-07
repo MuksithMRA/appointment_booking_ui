@@ -28,6 +28,7 @@ class _ScheduleWorkBenchState extends State<ScheduleWorkBench> {
   @override
   void initState() {
     super.initState();
+    widget.slots.sort((a, b) => a.scheduleDateTime!.compareTo(b.scheduleDateTime!));
     selectedDate = widget.slots.isNotEmpty
         ? widget.slots.last.scheduleDateTime
         : DateTime.now();
@@ -79,7 +80,8 @@ class _ScheduleWorkBenchState extends State<ScheduleWorkBench> {
                     selectedTime!.minute + 15,
                   );
                   selectedDate = newTime;
-                  dateController.text = DateFormat("yyyy-MM-dd").format(newTime);
+                  dateController.text =
+                      DateFormat("yyyy-MM-dd").format(newTime);
                   selectedTime = TimeOfDay.fromDateTime(newTime);
                   timeController.text = selectedTime?.format(context) ?? "";
                 }
@@ -222,18 +224,22 @@ class _ScheduleWorkBenchState extends State<ScheduleWorkBench> {
         SizedBox(
           width: ScreenSize.width * 0.7,
           child: PaginatedDataTable(
-            showFirstLastButtons:  true,
-            showEmptyRows: false,
-            availableRowsPerPage: const [8, 16, 24, 32],
-            rowsPerPage: 8,
-            columns: const [
-              DataColumn(label: Text('Schedule No')),
-              DataColumn(label: Text('Scheduled On')),
-              DataColumn(label: Text('Status')),
-              DataColumn(label: Text('Action')),
-            ],
-            source: ScheduleDataSource(data: widget.slots),
-          ),
+              showFirstLastButtons: true,
+              showEmptyRows: false,
+              availableRowsPerPage: const [8, 16, 24, 32],
+              rowsPerPage: 8,
+              columns: const [
+                DataColumn(label: Text('Schedule No')),
+                DataColumn(label: Text('Scheduled On')),
+                DataColumn(label: Text('Status')),
+                DataColumn(label: Text('Action')),
+              ],
+              source: ScheduleDataSource(
+                data: widget.slots
+                    .where((element) =>
+                        element.scheduleDateTime!.isAfter(DateTime.now()))
+                    .toList(),
+              )),
         ),
       ],
     );
