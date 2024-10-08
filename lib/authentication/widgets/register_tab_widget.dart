@@ -251,7 +251,7 @@ class _RegisterTabWidgetState extends State<RegisterTabWidget> {
 
                   PatientModel patientModel = PatientModel(
                     avatar: gender?.code == "M"
-                        ? "https://img.freepik.com/free-photo/3d-portrait-people_23-2150793895.jpg"
+                        ? "https://as2.ftcdn.net/v2/jpg/04/85/39/87/1000_F_485398728_aKL9duq8W78nnZ65BR3oGRMgari0sWEG.jpg"
                         : "https://img.freepik.com/free-photo/portrait-young-woman-wearing-glasses-3d-rendering_1142-43632.jpg",
                     email: emailController.text.trim(),
                     firstName: firstNameController.text.trim(),

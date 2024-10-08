@@ -237,7 +237,7 @@ class _PatientBookingDetailsWidgetState
                   CircleAvatar(
                     radius: 30,
                     backgroundImage: NetworkImage(patient?.avatar ??
-                        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"),
+                        "https://as2.ftcdn.net/v2/jpg/04/85/39/87/1000_F_485398728_aKL9duq8W78nnZ65BR3oGRMgari0sWEG.jpg"),
                   ),
                   const SizedBox(width: 20),
                   Column(
@@ -285,26 +285,24 @@ class _PatientBookingDetailsWidgetState
               ),
               SizedBox(
                 width: ScreenSize.width * 0.2,
-                child: Flexible(
-                  child: DropdownButtonFormField(
-                    decoration: InputDecoration(
-                      label: const Text("Payment Method"),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                child: DropdownButtonFormField(
+                  decoration: InputDecoration(
+                    label: const Text("Payment Method"),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    items: const [
-                      DropdownMenuItem(
-                        value: "Cash",
-                        child: Text("Cash"),
-                      ),
-                      DropdownMenuItem(
-                        value: "Card",
-                        child: Text("Card"),
-                      ),
-                    ],
-                    onChanged: (value) {},
                   ),
+                  items: const [
+                    DropdownMenuItem(
+                      value: "Cash",
+                      child: Text("Cash"),
+                    ),
+                    DropdownMenuItem(
+                      value: "Card",
+                      child: Text("Card"),
+                    ),
+                  ],
+                  onChanged: (value) {},
                 ),
               ),
               SizedBox(
