@@ -82,10 +82,34 @@ class AuthenticationProvider extends ChangeNotifier {
           await SecureStorageService.write(key: "fullName", value: fullName);
           await SecureStorageService.write(key: "avatar", value: avatar);
           await SecureStorageService.write(key: "role", value: role);
+          await SecureStorageService.write(key: "isVerified", value: 'false');
           return (true, data['message'].toString());
         } else {
           return (false, data['message'].toString());
         }
+      }
+    } on Exception catch (ex) {
+      log(ex.toString());
+      return (false, ex.toString());
+    }
+    return (false, "Something went wrong!");
+  }
+
+  Future<(bool, String)> validateOTP(String email, String otp) async {
+    try {
+      final http.Response response = await http.post(
+        Uri.parse("${Environment.apiUrl}/Authentication/validateOTP"),
+        headers: await Utils.headers(),
+        body: jsonEncode({
+          "email":email,
+          "otp": otp,
+          "isRegistration": false
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return (data['statusCode'] == 200, data['message'].toString());
       }
     } on Exception catch (ex) {
       log(ex.toString());
@@ -147,6 +171,8 @@ class AuthenticationProvider extends ChangeNotifier {
     await SecureStorageService.delete(key: "token");
     await SecureStorageService.delete(key: "fullName");
     await SecureStorageService.delete(key: "avatar");
+    await SecureStorageService.delete(key: "role");
+    await SecureStorageService.delete(key: "isVerified");
     isLoggedIn = false;
     notifyListeners();
   }

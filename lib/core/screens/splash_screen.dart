@@ -1,5 +1,9 @@
+import 'package:asiri/authentication/utils.dart';
 import 'package:asiri/dependencies/secure_storage_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../authentication/providers/authentication_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -19,6 +23,12 @@ class _SplashScreenState extends State<SplashScreen> {
             // ignore: use_build_context_synchronously
             Navigator.pushReplacementNamed(context, "/doctor/home");
           } else {
+            String? isVerified =
+                await SecureStorageService.read(key: "isVerified");
+            if (isVerified == 'false') {
+              // ignore: use_build_context_synchronously
+                context.read<AuthenticationProvider>().logout();
+            }
             // ignore: use_build_context_synchronously
             Navigator.pushReplacementNamed(context, "/home");
           }

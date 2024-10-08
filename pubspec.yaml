@@ -24,6 +24,7 @@ dependencies:
   toastification: ^2.2.0
   url_strategy: ^0.3.0
   encrypt: ^5.0.3
+  flutter_otp_text_field: ^1.2.0
 
 dev_dependencies:
   flutter_test:

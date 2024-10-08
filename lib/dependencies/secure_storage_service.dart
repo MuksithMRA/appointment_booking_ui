@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorageService {
@@ -9,6 +11,7 @@ class SecureStorageService {
   }
 
   static Future<String?> read({required String key}) async {
+    log(key);
     return await _storage.read(key: key);
   }
 
