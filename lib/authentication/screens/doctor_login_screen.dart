@@ -127,8 +127,8 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                     (bool, String) response =
                         await LoadingOverlay.of(context).during(
                       context.read<AuthenticationProvider>().loginDoctor(
-                            emailController.text.trim(),
-                            passwordController.text.trim(),
+                            Utils.encryptData(emailController.text.trim()),
+                            Utils.encryptData(passwordController.text.trim()),
                           ),
                     );
 
