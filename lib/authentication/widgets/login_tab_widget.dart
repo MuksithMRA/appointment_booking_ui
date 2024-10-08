@@ -87,13 +87,13 @@ class _LoginTabWidgetState extends State<LoginTabWidget> {
               ),
               onPressed: () async {
                 if (formKey.currentState!.validate()) {
-                  (bool, String) response =
-                      await LoadingOverlay.of(context).during(
-                    context.read<AuthenticationProvider>().loginPatient(
-                          emailController.text.trim(),
-                          passwordController.text.trim(),
-                        ),
-                  );
+                  (
+                    bool,
+                    String
+                  ) response = await LoadingOverlay.of(context).during(context
+                      .read<AuthenticationProvider>()
+                      .loginPatient(emailController.text.trim(),
+                          Utils.encryptData(passwordController.text.trim())));
 
                   if (response.$1) {
                     formKey.currentState!.reset();

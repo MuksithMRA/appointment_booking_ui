@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
-
+import 'package:encrypt/encrypt.dart' as encrypt;
 import '../dependencies/secure_storage_service.dart';
 
 class Utils {
   static Toastification toastification = Toastification();
-  static Future<Map<String, String>> headers()async {
+  static Future<Map<String, String>> headers() async {
     return {
-      "Authorization": "Bearer ${await SecureStorageService.read(key: "token")}",
+      "Authorization":
+          "Bearer ${await SecureStorageService.read(key: "token")}",
       "Content-Type": "application/json",
       "Accept": "*/*"
     };
@@ -71,5 +72,30 @@ class Utils {
         color: Colors.white,
       ),
     );
+  }
+
+  static String encryptData(String plainText) {
+    const key = 'biCMfSqPplcSEDkC';
+    const iv = 'KVDT0ZN45KDxUJok';
+    final keyBytes = encrypt.Key.fromUtf8(key);
+    final ivBytes = encrypt.IV.fromUtf8(iv);
+
+    final encrypter =
+        encrypt.Encrypter(encrypt.AES(keyBytes, mode: encrypt.AESMode.cbc));
+    final encrypted = encrypter.encrypt(plainText, iv: ivBytes);
+
+    return encrypted.base64;
+  }
+
+  static String decryptData(String encryptedData) {
+    const key = 'biCMfSqPplcSEDkC';
+    const iv = 'KVDT0ZN45KDxUJok';
+    final keyBytes = encrypt.Key.fromUtf8(key);
+    final ivBytes = encrypt.IV.fromUtf8(iv);
+    final encrypter =
+        encrypt.Encrypter(encrypt.AES(keyBytes, mode: encrypt.AESMode.cbc));
+    final decrypted = encrypter
+        .decrypt(encrypt.Encrypted.fromBase64(encryptedData), iv: ivBytes);
+    return decrypted;
   }
 }
