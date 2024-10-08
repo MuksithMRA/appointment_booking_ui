@@ -169,8 +169,8 @@ class _LoginTabWidgetState extends State<LoginTabWidget> {
       formKey.currentState!.reset();
       await SecureStorageService.delete(key: "isVerified");
       Utils.success(context, isSuccess.$2);
-      // Navigator.pop(context);
       // ignore: use_build_context_synchronously
+      Navigator.pushNamedAndRemoveUntil(context, "/home", (route) => false);
     } else {
       triggered = false;
       Utils.error(context, isSuccess.$2);
